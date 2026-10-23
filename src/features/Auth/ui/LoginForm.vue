@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { login } from '../lib/login'
+import { register } from '../lib/register'
 
 const formTitle = ref('Вход')
 const submitButtonText= ref('Войти')
@@ -38,14 +39,26 @@ function changeMode() {
     }
 }
 
-async function submitLogin() {
-    const response: string = await login(username.value, password.value)
+async function submitForm() {
+    let response: string = '';
 
-    if (response === 'OK') {
-        window.location.reload()
+    if (formTitle.value === 'Вход') {
+        response = await login(username.value, password.value)
+    }
+    
+    else {
+        response = await register(username.value, password.value)
     }
 
-    messages.value = response.split('|')
+    console.log(response)
+
+    if (response === 'OK') {
+        return navigateTo('/')
+    }
+
+    else {
+        messages.value = response.split('|')
+    }
 }
 </script>
 
@@ -53,7 +66,7 @@ async function submitLogin() {
     <h1 class="text-6xl font-bold">{{ formTitle }}</h1>
 
     <form class="flex flex-col items-center gap-4"
-    @submit.prevent="submitLogin">
+    @submit.prevent="submitForm">
         <input v-model="username"
         class="border border-neutral-300 rounded-lg p-2.5"
         type="text" placeholder="Имя пользователя">
@@ -62,14 +75,14 @@ async function submitLogin() {
         class="border border-neutral-300 rounded-lg p-2.5"
         type="password" placeholder="Пароль">
 
-        <button class="rounded-3xl bg-blue-900 hover:bg-blue-950 p-3 cursor-pointer"
-        type="submit"><b>{{ submitButtonText }}</b></button>
+        <button class="rounded-3xl bg-blue-900 hover:bg-blue-950 p-3 cursor-pointer font-bold"
+        type="submit">{{ submitButtonText }}</button>
 
-        <p v-if="messages.length !== 0" v-for="message in messages"
+        <p v-if="messages.length > 0" v-for="message in messages"
         class="text-red-600">{{ message }}</p>
     </form>
 
-    <button class="rounded-3xl bg-neutral-200 hover:bg-neutral-500 text-black p-3 cursor-pointer"
+    <button class="rounded-3xl bg-neutral-200 hover:bg-neutral-500 text-black p-3 cursor-pointer font-bold"
     type="button"
-    @click="changeMode"><b>{{ changeModeButtonText }}</b></button>
+    @click="changeMode">{{ changeModeButtonText }}</button>
 </template>

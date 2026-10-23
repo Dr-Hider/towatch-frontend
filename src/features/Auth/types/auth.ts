@@ -10,3 +10,8 @@ export interface AuthResponse {
 export interface ErrorResponse {
     message: string
 }
+
+export interface MeResponse {
+    id: number
+    username: string
+}

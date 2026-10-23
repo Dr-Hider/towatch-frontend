@@ -21,7 +21,14 @@ export async function login(username: string, password: string): Promise<string>
 
         return 'OK'
     } catch (error: unknown) {
-        const message: string = (error as FetchError<ErrorResponse>).data?.message.toString() ?? 'An error occurred'
-        return message
+        const message: string | undefined = (error as FetchError<ErrorResponse>).data?.message
+        
+        if (message === undefined) {
+            return 'An error occured'
+        }
+
+        else {
+            return message.toString()
+        }
     }
 }
