@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+body {
+    @apply min-h-dvh;
+    @apply bg-neutral-900;
+    @apply text-white;
+}
