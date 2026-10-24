@@ -1,0 +1,26 @@
+# VCS
+.git
+.gitignore
+
+# Зависимости и артефакты сборки (ставятся/собираются внутри образа)
+node_modules
+.nuxt
+.nitro
+.output
+.data
+.cache
+dist
+
+# Локальные env-файлы
+.env
+.env.*
+
+# Прочее
+.vscode
+logs
+*.log
+README.md
+Dockerfile
+.dockerignore
+docker-compose*.yml
+proxy
