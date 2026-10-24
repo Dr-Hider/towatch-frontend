@@ -30,6 +30,7 @@ export async function updateItem(
         const response: Item = await $fetch(`${apiUrl}/items/${id}`, {
             method: 'PUT',
             headers: {
+                "content-type": "application/json",
                 "authorization": `Bearer ${token}`
             },
             body: JSON.stringify(body)

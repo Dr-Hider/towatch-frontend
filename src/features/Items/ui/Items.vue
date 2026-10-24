@@ -7,6 +7,7 @@ import type { Item } from '../types/item'
 import type { Type } from '../types/type'
 import type { Status } from '../types/status'
 import Card from './Card.vue'
+import CreateForm from './CreateForm.vue'
 
 const items = ref<Item[]>([])
 
@@ -14,6 +15,8 @@ const message = ref('')
 
 const types = ref<Type[]>([])
 const statuses = ref<Status[]>([])
+
+const ready = ref(false)
 
 onMounted(async () => {
     message.value = ''
@@ -39,20 +42,50 @@ onMounted(async () => {
     types.value = typesResponse
     statuses.value = statusesResponse
 
+    ready.value = true
+
     return
 })
+
+function onCreated(item: Item) {
+    items.value.push(item)
+}
+
+function onDeleted(id: number) {
+    let deletedItem: Item
+
+    items.value.forEach(item => {
+        if (item.id === id) {
+            deletedItem = item
+        }
+    })
+
+    const newItems: Item[] = items.value.filter(item => item !== deletedItem)
+    items.value = newItems
+}
 </script>
 
 <template>
-    <section class="flex flex-col items-center gap-8">
-        <h1 class="text-6xl font-bold">Главная</h1>
-        <Card v-if="message === ''" v-for="item in items"
+    <section class="flex flex-col items-center gap-10">
+        <h1 class="text-4xl md:text-5xl font-bold">Моя очередь</h1>
+
+        <Card v-if="message === '' && ready" v-for="item in items"
         :id="item.id"
         :title="item.title"
         :typeId="item.typeId"
         :statusId="item.statusId"
         :types="types"
-        :statuses="statuses" />
+        :statuses="statuses"
+        @deleted="onDeleted" />
+
+        <span class="hidden md:block"></span>
+
+        <h1 class="text-4xl md:text-5xl font-bold">Добавить</h1>
+
+        <CreateForm v-if="message === '' && ready"
+        :types="types"
+        :statuses="statuses"
+        @created="onCreated" />
 
         <p v-if="message !== ''">{{ message }}</p>
     </section>

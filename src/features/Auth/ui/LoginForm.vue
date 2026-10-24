@@ -4,8 +4,9 @@ import { login } from '../lib/login'
 import { register } from '../lib/register'
 
 const formTitle = ref('Вход')
-const submitButtonText= ref('Войти')
-const changeModeButtonText = ref('Зарегистрироваться')
+const submitButtonCaption= ref('Войти')
+const changeModeButtonCaption = ref('Зарегистрироваться')
+const hintCaption = ref('Нет аккаунта?')
 
 const username = ref('')
 const password = ref('')
@@ -20,8 +21,9 @@ onMounted(() => {
 function changeMode() {
     if (formTitle.value === 'Вход') {
         formTitle.value = 'Регистрация'
-        submitButtonText.value = 'Зарегистрироваться'
-        changeModeButtonText.value = 'Войти'
+        submitButtonCaption.value = 'Зарегистрироваться'
+        changeModeButtonCaption.value = 'Войти'
+        hintCaption.value = 'Есть аккаунт?'
 
         username.value = ''
         password.value = ''
@@ -30,8 +32,9 @@ function changeMode() {
 
     else {
         formTitle.value = 'Вход'
-        submitButtonText.value = 'Войти'
-        changeModeButtonText.value = 'Зарегистрироваться'
+        submitButtonCaption.value = 'Войти'
+        changeModeButtonCaption.value = 'Зарегистрироваться'
+        hintCaption.value = 'Нет аккаунта?'
 
         username.value = ''
         password.value = ''
@@ -50,8 +53,6 @@ async function submitForm() {
         response = await register(username.value, password.value)
     }
 
-    console.log(response)
-
     if (response === 'OK') {
         return navigateTo('/')
     }
@@ -61,26 +62,31 @@ async function submitForm() {
 </script>
 
 <template>
-    <h1 class="text-6xl font-bold">{{ formTitle }}</h1>
+    <h1 class="text-4xl md:text-5xl font-bold">{{ formTitle }}</h1>
 
     <form class="flex flex-col items-center gap-4"
     @submit.prevent="submitForm">
         <input v-model="username"
-        class="border border-neutral-300 rounded-lg p-2.5"
+        class="w-48 md:w-64 border border-neutral-300 rounded-lg p-2.5"
         type="text" placeholder="Имя пользователя">
 
         <input v-model="password"
-        class="border border-neutral-300 rounded-lg p-2.5"
+        class="w-48 md:w-64 border border-neutral-300 rounded-lg p-2.5"
         type="password" placeholder="Пароль">
 
-        <button class="rounded-3xl bg-blue-900 hover:bg-blue-950 p-3 cursor-pointer font-bold"
-        type="submit">{{ submitButtonText }}</button>
+        <button class="min-w-16 md:min-w-20 max-w-44 md:max-w-52
+        rounded-3xl bg-blue-900 hover:bg-blue-950 p-3 cursor-pointer font-bold"
+        type="submit">{{ submitButtonCaption }}</button>
 
         <p v-if="messages.length > 0" v-for="message in messages"
         class="text-red-600">{{ message }}</p>
     </form>
 
-    <button class="rounded-3xl bg-neutral-200 hover:bg-neutral-500 text-black p-3 cursor-pointer font-bold"
-    type="button"
-    @click="changeMode">{{ changeModeButtonText }}</button>
+    <div class="flex flex-col items-center gap-2.5">
+        <p class="text-base text-neutral-300">{{ hintCaption }}</p>
+        <button class="min-w-16 md:min-w-20 max-w-44 md:max-w-52
+        rounded-3xl bg-neutral-200 hover:bg-neutral-500 text-black p-3 cursor-pointer font-bold"
+        type="button"
+        @click="changeMode">{{ changeModeButtonCaption }}</button>
+    </div>
 </template>

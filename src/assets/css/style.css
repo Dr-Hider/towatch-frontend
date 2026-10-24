@@ -4,4 +4,5 @@ body {
     @apply min-h-dvh;
     @apply bg-neutral-900;
     @apply text-white;
+    @apply text-sm md:text-lg
 }

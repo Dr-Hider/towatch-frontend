@@ -4,6 +4,7 @@ import type { Type } from '../types/type'
 import type { Status } from '../types/status'
 import type { Item } from '../types/item'
 import { updateItem } from '../lib/updateItem'
+import { deleteItem } from '../lib/deleteItem'
 
 interface Props {
     id: number
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits<{'deleted': [id: number]}>()
 
 const id = props.id
 const title = ref(props.title)
@@ -45,25 +47,37 @@ async function editButtonClick() {
 
         editMode.value = false
         editButtonCaption.value = 'Изменить'
+        messages.value = []
         return
     }
 
     messages.value = response.title.split('|')
 }
+
+async function deleteButtonClick() {
+    const response: string = await deleteItem(id)
+
+    if (response === 'OK') {
+        emit('deleted', id)
+        return
+    }
+
+    messages.value = response.split('|')
+}
 </script>
 
 <template>
-    <div class="flex flex-col gap-2.5">
-        <div class="flex flex-row gap-2.5">
+    <div class="flex flex-col items-center gap-2.5">
+        <div class="md:h-11 flex flex-col md:flex-row items-center gap-2.5">
             <input v-model="title"
             :disabled="!editMode"
-            class="w-96 border-2 rounded-lg p-2"
+            class="md:h-full w-48 md:w-96 border-2 rounded-lg p-2"
             :class="{'border-neutral-500': !editMode, 'border-green-600': editMode}"
             type="text" placeholder="Название">
 
             <select v-model="typeId"
             :disabled="!editMode"
-            class="w-32 border-2 rounded-lg p-2"
+            class="md:h-full w-48 md:w-36 border-2 rounded-lg p-2"
             :class="{'border-neutral-500': !editMode, 'border-green-600': editMode}">
                 <option v-for="type in types"
                 :value="type.id">{{ type.name }}</option>
@@ -71,19 +85,20 @@ async function editButtonClick() {
 
             <select v-model="statusId"
             :disabled="!editMode"
-            class="w-32 border-2 rounded-lg p-2"
+            class="md:h-full w-48 md:w-36 border-2 rounded-lg p-2"
             :class="{'border-neutral-500': !editMode, 'border-green-600': editMode}">
                 <option v-for="status in statuses"
                 :value="status.id">{{ status.name }}</option>
             </select>
 
-            <button class="w-28 rounded-lg p-2 cursor-pointer"
+            <button class="md:h-full w-28 rounded-lg p-2 cursor-pointer"
             :class="{'bg-yellow-700 hover:bg-yellow-900': !editMode, 'bg-green-800 hover:bg-green-900': editMode}"
             type="button"
             @click="editButtonClick">{{ editButtonCaption }}</button>
 
-            <button class="w-28 rounded-lg bg-red-600 hover:bg-red-900 p-2 cursor-pointer"
-            type="button">Удалить</button>
+            <button class="md:h-full w-28 rounded-lg bg-red-600 hover:bg-red-900 p-2 cursor-pointer"
+            type="button"
+            @click="deleteButtonClick">Удалить</button>
         </div>
 
         <p v-if="messages.length > 0" v-for="message in messages"
