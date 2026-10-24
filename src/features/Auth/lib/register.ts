@@ -1,4 +1,5 @@
-import type { AuthRequest, AuthResponse, ErrorResponse } from '../types/auth'
+import type { AuthRequest, AuthResponse } from '../types/auth'
+import type { ErrorResponse } from '~/shared/Error'
 import type { FetchError } from 'ofetch'
 
 export async function register(username: string, password: string): Promise<string> {
@@ -12,6 +13,9 @@ export async function register(username: string, password: string): Promise<stri
     try {
         const authResponse: AuthResponse = await $fetch(`${apiUrl}/auth/register`, {
             method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
             body: JSON.stringify(body)
         })
 
@@ -21,14 +25,19 @@ export async function register(username: string, password: string): Promise<stri
 
         return 'OK'
     } catch (error: unknown) {
-        const message: string | undefined = (error as FetchError<ErrorResponse>).data?.message
-        
-        if (message === undefined) {
-            return 'An error occured'
+        const fetchError: FetchError = (error as FetchError<ErrorResponse>)
+
+        const message: string | undefined = fetchError.data?.message
+        const code: number | undefined = fetchError.response?.status
+
+        if (message === undefined && code !== undefined) {
+            return `${code} error occurred`
         }
 
-        else {
+        else if (message !== undefined) {
             return message.toString()
         }
+
+        return 'An error occurred'
     }
 }

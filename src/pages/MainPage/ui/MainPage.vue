@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { Items } from '~/features/Items'
+
 </script>
 
 <template>
     <main>
-        <p>Aboba 2</p>
+        <Items />
     </main>
 </template>

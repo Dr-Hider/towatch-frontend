@@ -1,4 +1,5 @@
-import type { MeResponse, ErrorResponse } from '../types/auth'
+import type { MeResponse } from '../types/auth'
+import type { ErrorResponse } from '~/shared/Error'
 import type { FetchError } from 'ofetch'
 
 export async function getMe(token: string): Promise<string> {
@@ -19,14 +20,19 @@ export async function getMe(token: string): Promise<string> {
 
         return 'OK'
     } catch (error: unknown) {
-        const message: string | undefined = (error as FetchError<ErrorResponse>).data?.message
-        
-        if (message === undefined) {
-            return 'An error occured'
+        const fetchError: FetchError = (error as FetchError<ErrorResponse>)
+
+        const message: string | undefined = fetchError.data?.message
+        const code: number | undefined = fetchError.response?.status
+
+        if (message === undefined && code !== undefined) {
+            return `${code} error occurred`
         }
 
-        else {
+        else if (message !== undefined) {
             return message.toString()
         }
+
+        return 'An error occurred'
     }
 }

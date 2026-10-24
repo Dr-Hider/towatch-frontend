@@ -56,9 +56,7 @@ async function submitForm() {
         return navigateTo('/')
     }
 
-    else {
-        messages.value = response.split('|')
-    }
+    messages.value = response.split('|')
 }
 </script>
 
