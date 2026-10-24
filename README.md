@@ -1,4 +1,4 @@
-Launching:
+Using:
 1. Download and run [backend](https://github.com/Dr-Hider/towatch-backend)
 2. Rename `.env.example` to `.env`
 3. (Optional) Configure `.env` the way you need
