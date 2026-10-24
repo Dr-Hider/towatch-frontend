@@ -27,9 +27,21 @@ onMounted(async () => {
     const typesResponse: Type[] = await getTypes()
     const statusesResponse: Status[] = await getStatuses()
 
-    if (itemsResponse.length === 0) {
-        message.value = 'Здесь пока ничего нет'
+    if (typesResponse[0]?.id === -1) {
+        message.value = typesResponse[0].name
         return
+    }
+
+    if (statusesResponse[0]?.id === -1) {
+        message.value = statusesResponse[0].name
+        return
+    }
+
+    types.value = typesResponse
+    statuses.value = statusesResponse
+
+    if (itemsResponse.length === 0) {
+        message.value = 'Очередь пуста'
     }
 
     else if (itemsResponse[0]?.id === -1) {
@@ -38,17 +50,12 @@ onMounted(async () => {
     }
 
     items.value = itemsResponse
-
-    types.value = typesResponse
-    statuses.value = statusesResponse
-
     ready.value = true
-
-    return
 })
 
 function onCreated(item: Item) {
     items.value.push(item)
+    message.value = ''
 }
 
 function onDeleted(id: number) {
@@ -62,6 +69,10 @@ function onDeleted(id: number) {
 
     const newItems: Item[] = items.value.filter(item => item !== deletedItem)
     items.value = newItems
+
+    if (items.value.length === 0) {
+        message.value = 'Очередь пуста'
+    }
 }
 </script>
 
@@ -69,7 +80,10 @@ function onDeleted(id: number) {
     <section class="flex flex-col items-center gap-10">
         <h1 class="text-4xl md:text-5xl font-bold">Моя очередь</h1>
 
-        <Card v-if="message === '' && ready" v-for="item in items"
+        <p v-if="message !== ''"
+        class="text-3xl md:text-4xl text-neutral-500 text-bold">{{ message }}</p>
+
+        <Card v-if="ready" v-for="item in items"
         :id="item.id"
         :title="item.title"
         :typeId="item.typeId"
@@ -78,15 +92,14 @@ function onDeleted(id: number) {
         :statuses="statuses"
         @deleted="onDeleted" />
 
-        <span class="hidden md:block"></span>
+        <span v-if="ready"></span>
 
-        <h1 class="text-4xl md:text-5xl font-bold">Добавить</h1>
+        <h1 v-if="ready"
+        class="text-4xl md:text-5xl font-bold">Добавить</h1>
 
-        <CreateForm v-if="message === '' && ready"
+        <CreateForm v-if="ready"
         :types="types"
         :statuses="statuses"
         @created="onCreated" />
-
-        <p v-if="message !== ''">{{ message }}</p>
     </section>
 </template>

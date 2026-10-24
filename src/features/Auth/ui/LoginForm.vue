@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { login } from '../lib/login'
 import { register } from '../lib/register'
 
+const { authLogin } = useAuth()
+
 const formTitle = ref('Вход')
 const submitButtonCaption= ref('Войти')
 const changeModeButtonCaption = ref('Зарегистрироваться')
@@ -54,6 +56,7 @@ async function submitForm() {
     }
 
     if (response === 'OK') {
+        authLogin()
         return navigateTo('/')
     }
 

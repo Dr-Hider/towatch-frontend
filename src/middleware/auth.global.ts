@@ -1,6 +1,8 @@
 import { getMe } from '~/features/Auth'
 
 export default defineNuxtRouteMiddleware(async (to) => {
+    const { authLogin } = useAuth()
+
     const token: string = localStorage.getItem('token') ?? ''
 
     if (to.path === '/login') {
@@ -11,6 +13,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
         const response = await getMe(token)
 
         if (response === 'OK') {
+            authLogin()
             return navigateTo('/')
         }
 
@@ -26,4 +29,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (response !== 'OK') {
         return navigateTo('/login')
     }
+
+    authLogin()
 })
